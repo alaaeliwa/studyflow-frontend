@@ -34,6 +34,16 @@ export function PlanResourcesPanel({ resources, onAddResource, onDeleteResource 
     return "text-blue-600 dark:text-blue-400 bg-blue-100/20 dark:bg-blue-900/20";
   };
 
+  const getResourceHref = (r: LearningResource) => {
+    if (r.type === 'link') return r.url;
+    const params = new URLSearchParams({
+      url: r.url,
+      title: r.title,
+      type: r.type,
+    });
+    return `/view-resource?${params.toString()}`;
+  };
+
   const handleAdd = async () => {
     if (!title.trim() || !url.trim()) return;
     if (onAddResource) {
@@ -125,7 +135,7 @@ export function PlanResourcesPanel({ resources, onAddResource, onDeleteResource 
               <div key={r.id} className="flex items-start gap-3 p-3 rounded-xl border border-border/50 bg-card hover:bg-muted/50 transition-colors group">
                 <div className={`p-2 rounded-lg shrink-0 ${getColor(r.type)}`}>{getIcon(r.type)}</div>
                 <div className="flex-1 min-w-0">
-                  <a href={r.url} target="_blank" rel="noopener noreferrer"
+                  <a href={getResourceHref(r)} target="_blank" rel="noopener noreferrer"
                     className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
                     {r.title}<ExternalLink className="h-3 w-3 shrink-0 text-muted-foreground" />
                   </a>

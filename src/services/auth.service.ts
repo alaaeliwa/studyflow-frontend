@@ -80,6 +80,7 @@ function mapUserFromBackend(user: BackendUser): UserProfile {
     reminderPreferences: { ...DEFAULT_REMINDER_PREFERENCES, ...(reminderPrefs || {}) },
     focusPreferences: { ...DEFAULT_FOCUS_PREFERENCES, ...(user.focusPreferences || user.focus_preferences || {}) },
     themePreference: user.themePreference || user.theme_preference || "system",
+    streak: user.streak_data || user.streakData || undefined,
   } as UserProfile;
 }
 
@@ -177,6 +178,7 @@ export const AuthService = {
       total_credit_hours: updates.totalCreditHours ? parseInt(updates.totalCreditHours) : undefined,
       completed_credit_hours: updates.completedCreditHours ? parseInt(updates.completedCreditHours) : undefined,
       current_gpa: updates.currentGPA ? parseFloat(updates.currentGPA) : undefined,
+      streak_data: updates.streak,
     };
     const response = await apiClient.post<{message: string, user: BackendUser}>("/user/update-profile", payload);
     const mappedUser = mapUserFromBackend(response.user);

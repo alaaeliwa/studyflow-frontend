@@ -28,7 +28,7 @@ export function NotificationCenter() {
       void loadNotifications();
     };
 
-    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+    if (typeof window !== "undefined" && typeof window.requestIdleCallback === "function") {
       const idleId = window.requestIdleCallback(loadWhenIdle, { timeout: 4000 });
       return () => window.cancelIdleCallback(idleId);
     }

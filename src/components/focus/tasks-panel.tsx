@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MoreHorizontal, Plus, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,21 @@ interface TasksPanelProps {
 }
 
 export function TasksPanel({ className }: TasksPanelProps) {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("studyflow-focus-tasks");
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("studyflow-focus-tasks", JSON.stringify(tasks));
+    }
+  }, [tasks]);
   const [newTaskText, setNewTaskText] = useState("");
   const [isAdding, setIsAdding] = useState(false);
 
