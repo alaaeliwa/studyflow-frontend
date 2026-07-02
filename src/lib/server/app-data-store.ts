@@ -197,8 +197,8 @@ function asRecord<T>(value: unknown): Record<string, T> {
     : {};
 }
 
-function toJson(value: unknown): any {
-  return value as any;
+function toJson(value: unknown): Prisma.InputJsonValue {
+  return value as Prisma.InputJsonValue;
 }
 
 async function readStore(): Promise<AppDataFile> {
@@ -206,7 +206,7 @@ async function readStore(): Promise<AppDataFile> {
 
   return {
     users: Object.fromEntries(
-      rows.map((row: any) => [
+      rows.map((row) => [
         row.userId,
         {
           semesters: asArray<PlannerSemester>(row.semesters),

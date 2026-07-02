@@ -53,12 +53,9 @@ function keepStreakAlive(state: AppState): AppState {
 }
 
 async function persistStreak(streak: AppState["streak"]) {
-  try {
-    const { AuthService } = await import("@/services/auth.service");
-    await AuthService.updateProfile({ streak });
-  } catch (error) {
-    console.error("Failed to persist streak", error);
-  }
+  // Backend doesn't support streak yet.
+  void streak;
+  return;
 }
 
 function syncSemesterStatus(state: AppState, semesterId?: string): AppState {
@@ -140,7 +137,7 @@ export function useAppState() {
                 ...(parsed.focusPreferences || parsed.focus_preferences || {}),
               },
             };
-            AppStore.update({ userProfile: normalized, streak: parsed.streak || EMPTY_APP_STATE.streak });
+            AppStore.update({ userProfile: normalized });
           } catch {
             // ignore parse errors
           }
@@ -154,7 +151,7 @@ export function useAppState() {
         profileRequest = import("@/services/auth.service")
           .then(({ AuthService }) => AuthService.getProfile())
           .then((profile) => {
-            AppStore.update((prev) => keepStreakAlive({
+            AppStore.update((prev) => ({
               ...prev,
               userProfile: { ...prev.userProfile, ...profile },
               streak: profile?.streak || prev.streak,

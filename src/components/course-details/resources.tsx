@@ -45,16 +45,6 @@ export function Resources({ resources = [], onAddResource, onDeleteResource }: R
     }
   };
 
-  const getResourceHref = (r: Resource) => {
-    if (r.type === 'link') return r.url;
-    const params = new URLSearchParams({
-      url: r.url,
-      title: r.title,
-      type: r.type,
-    });
-    return `/view-resource?${params.toString()}`;
-  };
-
   const handleAdd = async () => {
     if (!newTitle.trim() || !newUrl.trim()) return;
     
@@ -165,7 +155,7 @@ export function Resources({ resources = [], onAddResource, onDeleteResource }: R
               </div>
               <div className="flex-1 min-w-0">
                 <a
-                  href={getResourceHref(resource)} target="_blank" rel="noopener noreferrer"
+                  href={resource.url} target="_blank" rel="noopener noreferrer"
                   className="text-xs font-medium text-slate-900 dark:text-slate-100 hover:underline line-clamp-2 flex items-center gap-1"
                 >
                   {resource.title}

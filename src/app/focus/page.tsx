@@ -91,28 +91,9 @@ export default function FocusPage() {
     () => getStoredChallenge().minutes,
   );
 
-  const [activeSession, setActiveSession] = useState<SessionType>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("studyflow-active-session");
-      if (saved) return saved as SessionType;
-    }
-    return "pomodoro";
-  });
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("studyflow-active-session", activeSession);
-    }
-  }, [activeSession]);
+  const [activeSession, setActiveSession] = useState<SessionType>("pomodoro");
 
   const sessionStartRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("studyflow-session-start");
-      if (saved) sessionStartRef.current = saved;
-    }
-  }, []);
 
   const [sessionCounts, setSessionCounts] = useState({
     pomodoro: 0,
@@ -211,7 +192,6 @@ export default function FocusPage() {
         console.error("Failed to log focus session to backend");
       });
       sessionStartRef.current = null;
-      if (typeof window !== "undefined") localStorage.removeItem("studyflow-session-start");
     }
 
     if (activeSession === "pomodoro") {
@@ -227,10 +207,9 @@ export default function FocusPage() {
     }
   }, [activeSession, sessionCounts.pomodoro, getCurrentDurations]);
 
-  const { time, state, start, pause, reset, setTime, isLoaded } = useTimer({
-    initialTime: getDurationForSession(activeSession),
+  const { time, state, start, pause, reset, setTime } = useTimer({
+    initialTime: getDurationForSession("pomodoro"),
     onComplete: handleTimerComplete,
-    storageKey: "studyflow-timer",
   });
 
   // Save settings to backend (to be implemented)
@@ -247,7 +226,7 @@ export default function FocusPage() {
 
   // Update timer when session or settings change
   useEffect(() => {
-    if (state === "idle" && isLoaded) {
+    if (state === "idle") {
       setTime(getDurationForSession(activeSession));
     }
   }, [
@@ -257,13 +236,11 @@ export default function FocusPage() {
     state,
     getDurationForSession,
     setTime,
-    isLoaded,
   ]);
 
   const handleSessionChange = (session: SessionType) => {
     setActiveSession(session);
     sessionStartRef.current = null;
-    if (typeof window !== "undefined") localStorage.removeItem("studyflow-session-start");
     reset();
     setTime(getDurationForSession(session));
   };
@@ -291,7 +268,6 @@ export default function FocusPage() {
   const handleRestart = () => {
     reset();
     sessionStartRef.current = null;
-    if (typeof window !== "undefined") localStorage.removeItem("studyflow-session-start");
     setTime(getDurationForSession(activeSession));
     setSessionCounts({ pomodoro: 0, rest: 0, longRest: 0 });
     setTotalFocusMinutes(0);
@@ -398,9 +374,7 @@ export default function FocusPage() {
                   className="h-14 w-full max-w-md text-lg font-semibold hover:primary"
                   onClick={() => {
                     if (activeSession === "pomodoro" && !sessionStartRef.current) {
-                      const startIso = new Date().toISOString();
-                      sessionStartRef.current = startIso;
-                      if (typeof window !== "undefined") localStorage.setItem("studyflow-session-start", startIso);
+                      sessionStartRef.current = new Date().toISOString();
                     }
                     start();
                   }}
